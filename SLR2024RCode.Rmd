@@ -1,0 +1,336 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+---
+title: "SLR_2024"
+output: html_notebook
+---
+
+
+```{r}
+#https://docs.google.com/spreadsheets/d/e/2PACX-1vT5BaviGpM0T2UkNx6-ODNl1QEQMBBL2OQ0IKLrOY7ntFZlo2MaM2GKLyXaZBo82g4Ct2VPFat__9VX/pub?gid=34130077&single=true&output=csv
+#myurl<-"https://docs.google.com/spreadsheets/d/e/2PACX-1vQK4icGDxbSDN2qMy8IYtU4ZqFliLSX8DAlV14WhUztS67V5fgV_NVrKBupUX4oEWmhv79F9yVfxCIg/pub?output=csv"
+myurl<-"https://docs.google.com/spreadsheets/d/e/2PACX-1vT5BaviGpM0T2UkNx6-ODNl1QEQMBBL2OQ0IKLrOY7ntFZlo2MaM2GKLyXaZBo82g4Ct2VPFat__9VX/pub?gid=34130077&single=true&output=csv"
+newslr<-read.csv(url(myurl))
+newslr
+
+```
+```{r}
+windowsFonts()
+```
+
+
+```{r}
+# section 4.1 Overview of the sample
+library(ggplot2)
+library(ggpubr)
+theme_set(theme_pubr())
+library(dplyr)
+
+py <- newslr %>%
+  group_by(Publication.year) %>%
+  summarise(counts = n())
+
+ggplot(py, aes(x = Publication.year, y = counts)) +
+  geom_linerange(
+    aes(ymin = 0, ymax = counts), 
+    color = "lightgray", linewidth = 1.5
+  ) +
+  geom_point(aes(color = as.factor(Publication.year)), size = 2) +
+  ggpubr::color_palette("simpsons") +
+  labs(colour = "Year") +
+  labs(x = "Year") +
+  labs(y = "Number of publications") +
+  theme_pubclean()
+#ggsave("publication_plot.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
+ggsave("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/publication_plot.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
+
+
+```
+
+```{r}
+# section 4.1 Overview of the sample
+library(ggplot2)
+library(ggpubr)
+theme_set(theme_pubr())
+library(dplyr)
+
+py <- newslr %>%
+  group_by(Publication.year) %>%
+  summarise(counts = n())
+
+ggplot(py, aes(x = Publication.year, y = counts)) +
+  geom_linerange(
+    aes(ymin = 0, ymax = counts), 
+    color = "lightgray", linewidth = 1.5
+  ) +
+  geom_point(aes(color = as.factor(Publication.year)), size = 2) +
+  geom_text(aes(label = counts, vjust = -0.5), size = 3) +
+  ggpubr::color_palette("simpsons") +
+  labs(colour = "Year") +
+  labs(x = "Year") +
+  labs(y = "Number of publications") +
+  scale_y_continuous(limits = c(0, 12), breaks = seq(0, 12, by = 3)) +  # Set y-axis limits and breaks
+  theme_pubclean()
+
+ggsave("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/publication_plot1.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
+
+```
+
+
+```{r}
+# Load required packages
+library(dplyr)
+library(ggplot2)
+library(scales) # for formatting numbers
+
+# Create the chart for categories
+CategoryChart <- newslr %>%
+  count(Category) %>%
+  ungroup() %>%
+  mutate(per = n / sum(n)) %>%
+  arrange(desc(Category))
+
+CategoryChart$label <- paste0(format(CategoryChart$per * 100, digits = 1), "% (", CategoryChart$n, ")")
+
+ggplot(data = CategoryChart) +
+  geom_bar(aes(x = "", y = per, fill = Category), stat = "identity", width = 1) +
+  labs(title = "Ratio of conference and journals") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  guides(fill = guide_legend(title = "Category")) +
+  geom_text(aes(x = 1, y = cumsum(per) - per / 2, label = label))
+
+```
+
+
+```{r}
+#install.packages("eulerr")
+library(eulerr)
+#install.packages("nVennR")
+library(nVennR)
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#install.packages("BiocManager")
+#BiocManager::install("VennDetail")
+library(VennDetail)
+library(tidyverse)
+library(magrittr) 
+library(dplyr)
+#install.packages("ggvenn")
+library("ggvenn")
+library(venn)
+library(ggVennDiagram)
+library(fastDummies)
+```
+WHO were the target stakeholders?
+
+```{r}
+# Get rid of " " in the columns' names
+names(newslr)<-str_replace_all(names(newslr), c(" " = "."))
+# head(data)
+data <- newslr %>% select(Target.stakeholders, Paper.ID)
+# Split the stakeholders cells, create dummies
+results <- fastDummies::dummy_cols(data, select_columns = c("Target.stakeholders"), split = ",")
+# knitr::kable(results)
+# head(results)
+# Get rid of " " in the new columns' names  
+names(results)<-str_replace_all(names(results), c(" " = "."))
+
+# In case the file with dummy columns is needed
+# write.csv(results, "./dummy_stakeholders.csv", fileEncoding = "UTF-8", row.names = F)
+
+# Remove the stakehodlers column
+results <- results %>% select(-Target.stakeholders)
+
+# Vectorize dummy columns Students
+
+Administrators <- results %>% filter(Target.stakeholders_Administrators == '1') %>% select(Paper.ID) %>% as_vector()
+Curriculum_designers <- results %>% filter(Target.stakeholders_Curriculum.designers == '1') %>% select(Paper.ID) %>% as_vector()
+Students <- results %>% filter(Target.stakeholders_Students == '1') %>% select(Paper.ID) %>% as_vector()
+Teachers <- results %>% filter(Target.stakeholders_Teachers == '1') %>% select(Paper.ID) %>% as_vector()
+
+# List of vectors
+input <- list(Administrators=Administrators, Curriculum_designers=Curriculum_designers,Students=Students,Teachers=Teachers)
+
+# This wont work, too many dimensions
+#ggVennDiagram(input)
+
+# This won't work either
+# ggvenn(input)
+
+
+# Crazy 6-dimensional Venn
+# This one is cool for 5 an 7 dimensions, why not 6?????????
+venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
+
+
+# UpSet plot and pie
+ven <- venndetail(input)
+# Pie - not good for this case
+#plot(ven, type = "vennpie")
+
+# Show unique subsets, by changing any
+vennpie(ven,  any = 1, log = TRUE)
+# upSet - Best one for this case
+plot(ven, type = 'upset')
+
+
+```
+```{r}
+names(newslr)<-str_replace_all(names(newslr), c(" " = "."))
+# head(data)
+data <- newslr %>% select(Understand.Optimize, Paper.ID)
+data
+# Split the stakeholders cells, create dummies
+results <- fastDummies::dummy_cols(data, select_columns = c("Understand.Optimize"), split = ",")
+# knitr::kable(results)
+# head(results)
+# Get rid of " " in the new columns' names  
+names(results)<-str_replace_all(names(results), c(" " = "."))
+results
+# In case the file with dummy columns is needed
+# write.csv(results, "./dummy_stakeholders.csv", fileEncoding = "UTF-8", row.names = F)
+
+# Remove the stakehodlers column
+results <- results %>% select(-Understand.Optimize)
+results
+
+# Vectorize dummy columns Students
+
+Optimize <- results %>% filter(Understand.Optimize_Optimize == '1') %>% select(Paper.ID) %>% as_vector()
+Understand <- results %>% filter(Understand.Optimize_Understand == '1') %>% select(Paper.ID) %>% as_vector()
+
+# List of vectors
+input <- list(Optimize=Optimize, Understand=Understand)
+
+# This wont work, too many dimensions
+#ggVennDiagram(input)
+
+# This won't work either
+# ggvenn(input)
+
+
+# Crazy 6-dimensional Venn
+# This one is cool for 5 an 7 dimensions, why not 6?????????
+venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
+
+
+# UpSet plot and pie
+ven <- venndetail(input)
+# Pie - not good for this case
+plot(ven, type = "vennpie")
+
+# Show unique subsets, by changing any
+vennpie(ven,  any = 1, log = TRUE)
+# upSet - Best one for this case
+plot(ven, type = 'upset')
+# Crazy 6-dimensional Venn
+venn(input, zcolor = "style",  opacity = 0.3, plotsize = 30, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
+
+# Save the diagram as an image
+ggsave("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/publication_plot.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
+```
+
+Data used/gathered in/for the analysis 
+
+```{r}
+
+newslr
+# Get rid of " " in the columns' names
+names(newslr)<-str_replace_all(names(newslr), c(" " = "."))
+# head(data)
+data <- newslr %>% select(Gathered.data, Paper.ID)
+# Split the stakeholders cells, create dummies
+results1 <- fastDummies::dummy_cols(data, select_columns = c("Gathered.data"), split = ",")
+# knitr::kable(results)
+# head(results)
+# Get rid of " " in the new columns' names  
+names(results1)<-str_replace_all(names(results1), c(" " = "."))
+
+# Remove the stakehodlers column
+results1 <- results1 %>% select(-Gathered.data)
+results1
+
+#remove slashes from the column names
+colnames(results1)[5] <- "Gathered.data_Learning.desings.Course.designs"
+colnames(results1)[8] <- "Gathered.data_Student.production...Learning.artifacts"
+
+column_index <- which(names(results1) == "Gathered.data_Feedback.and.Input.from.Stakeholders")
+
+# Check if the column exists
+if (length(column_index) > 0) {
+  print("Column exists")
+} else {
+  print("Column does not exist")
+}
+
+# Vectorize dummy columns Students
+
+Academic_data <- results1 %>% filter(Gathered.data_Academic.data == '1') %>% select(Paper.ID) %>% as_vector()
+Learning_desings_Course_designs <- results1 %>% filter(Gathered.data_Learning.desings.Course.designs == '1') %>% select(Paper.ID) %>% as_vector()
+Student_production <- results1 %>% filter(Gathered.data_Student.production...Learning.artifacts == '1') %>% select(Paper.ID) %>% as_vector()
+Traces <- results1 %>% filter(Gathered.data_Traces == '1') %>% select(Paper.ID) %>% as_vector()
+Content <- results1 %>% filter(Gathered.data_Content == '1') %>% select(Paper.ID) %>% as_vector()
+Student_personal_data <- results1 %>% filter(Gathered.data_Student.personal.data == '1') %>% select(Paper.ID) %>% as_vector()
+Students_Teachers <- results1 %>% filter(Gathered.data_Feedback.and.Input.from.Stakeholders == '1') %>% select(Paper.ID) %>% as_vector()
+
+print(names(results1))
+
+
+
+# List of vectors
+input <- list(Academic_data=Academic_data, Students_Teachers=Students_Teachers, Learning_desings_Course_designs=Learning_desings_Course_designs, Student_production=Student_production, Traces=Traces, Content=Content, Student_personal_data=Student_personal_data)
+
+# This wont work, too many dimensions
+#ggVennDiagram(input)
+
+# This won't work either
+ggvenn(input)
+
+
+# Crazy 6-dimensional Venn
+# This one is cool for 5 an 7 dimensions, why not 6?????????
+venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
+
+
+# UpSet plot and pie
+ven <- venndetail(input)
+#Pie - not good for this case
+plot(ven, type = "vennpie")
+
+
+
+# Show unique subsets, by changing any
+#vennpie(ven,  any = 1, log = TRUE)
+# upSet - Best one for this case
+plot(ven, type = 'upset')
+
+pdf("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/upset_plotgathereddata.pdf", width = 10, height = 8)  # Adjust dimensions as needed
+
+# UpSet plot
+plot(ven, type = 'upset')
+
+# Close the PDF device
+dev.off()
+
+# JPEG device
+#jpeg("upset.jpeg", quality = 75)
+
+```
+```
+
