@@ -1,8 +1,6 @@
 
 
 ```{r}
-#https://docs.google.com/spreadsheets/d/e/2PACX-1vT5BaviGpM0T2UkNx6-ODNl1QEQMBBL2OQ0IKLrOY7ntFZlo2MaM2GKLyXaZBo82g4Ct2VPFat__9VX/pub?gid=34130077&single=true&output=csv
-#myurl<-"https://docs.google.com/spreadsheets/d/e/2PACX-1vQK4icGDxbSDN2qMy8IYtU4ZqFliLSX8DAlV14WhUztS67V5fgV_NVrKBupUX4oEWmhv79F9yVfxCIg/pub?output=csv"
 myurl<-"https://docs.google.com/spreadsheets/d/e/2PACX-1vT5BaviGpM0T2UkNx6-ODNl1QEQMBBL2OQ0IKLrOY7ntFZlo2MaM2GKLyXaZBo82g4Ct2VPFat__9VX/pub?gid=34130077&single=true&output=csv"
 newslr<-read.csv(url(myurl))
 newslr
@@ -30,34 +28,6 @@ ggplot(py, aes(x = Publication.year, y = counts)) +
     color = "lightgray", linewidth = 1.5
   ) +
   geom_point(aes(color = as.factor(Publication.year)), size = 2) +
-  ggpubr::color_palette("simpsons") +
-  labs(colour = "Year") +
-  labs(x = "Year") +
-  labs(y = "Number of publications") +
-  theme_pubclean()
-#ggsave("publication_plot.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
-ggsave("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/publication_plot.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
-
-
-```
-
-```{r}
-# section 4.1 Overview of the sample
-library(ggplot2)
-library(ggpubr)
-theme_set(theme_pubr())
-library(dplyr)
-
-py <- newslr %>%
-  group_by(Publication.year) %>%
-  summarise(counts = n())
-
-ggplot(py, aes(x = Publication.year, y = counts)) +
-  geom_linerange(
-    aes(ymin = 0, ymax = counts), 
-    color = "lightgray", linewidth = 1.5
-  ) +
-  geom_point(aes(color = as.factor(Publication.year)), size = 2) +
   geom_text(aes(label = counts, vjust = -0.5), size = 3) +
   ggpubr::color_palette("simpsons") +
   labs(colour = "Year") +
@@ -66,7 +36,7 @@ ggplot(py, aes(x = Publication.year, y = counts)) +
   scale_y_continuous(limits = c(0, 12), breaks = seq(0, 12, by = 3)) +  # Set y-axis limits and breaks
   theme_pubclean()
 
-ggsave("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/publication_plot1.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
+#ggsave("C:/Users/..../publication_plot1.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
 
 ```
 
@@ -154,39 +124,43 @@ input <- list(Administrators=Administrators, Curriculum_designers=Curriculum_des
 
 # Crazy 6-dimensional Venn
 # This one is cool for 5 an 7 dimensions, why not 6?????????
-venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
+#venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
 
 
 # UpSet plot and pie
-ven <- venndetail(input)
+#ven <- venndetail(input)
 # Pie - not good for this case
 #plot(ven, type = "vennpie")
 
 # Show unique subsets, by changing any
-vennpie(ven,  any = 1, log = TRUE)
+#vennpie(ven,  any = 1, log = TRUE)
 # upSet - Best one for this case
 plot(ven, type = 'upset')
 
 
 ```
+
+
+
+
 ```{r}
 names(newslr)<-str_replace_all(names(newslr), c(" " = "."))
 # head(data)
 data <- newslr %>% select(Understand.Optimize, Paper.ID)
-data
+#data
 # Split the stakeholders cells, create dummies
 results <- fastDummies::dummy_cols(data, select_columns = c("Understand.Optimize"), split = ",")
 # knitr::kable(results)
 # head(results)
 # Get rid of " " in the new columns' names  
 names(results)<-str_replace_all(names(results), c(" " = "."))
-results
+#results
 # In case the file with dummy columns is needed
 # write.csv(results, "./dummy_stakeholders.csv", fileEncoding = "UTF-8", row.names = F)
 
 # Remove the stakehodlers column
 results <- results %>% select(-Understand.Optimize)
-results
+#results
 
 # Vectorize dummy columns Students
 
@@ -205,7 +179,7 @@ input <- list(Optimize=Optimize, Understand=Understand)
 
 # Crazy 6-dimensional Venn
 # This one is cool for 5 an 7 dimensions, why not 6?????????
-venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
+#venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
 
 
 # UpSet plot and pie
@@ -221,14 +195,14 @@ plot(ven, type = 'upset')
 venn(input, zcolor = "style",  opacity = 0.3, plotsize = 30, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
 
 # Save the diagram as an image
-ggsave("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/publication_plot.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
+#ggsave("C:/Users/.../publication_plot.jpg", plot = last_plot(), device = "jpeg", dpi = 300)
 ```
 
 Data used/gathered in/for the analysis 
 
 ```{r}
 
-newslr
+#newslr
 # Get rid of " " in the columns' names
 names(newslr)<-str_replace_all(names(newslr), c(" " = "."))
 # head(data)
@@ -242,7 +216,7 @@ names(results1)<-str_replace_all(names(results1), c(" " = "."))
 
 # Remove the stakehodlers column
 results1 <- results1 %>% select(-Gathered.data)
-results1
+#results1
 
 #remove slashes from the column names
 colnames(results1)[5] <- "Gathered.data_Learning.desings.Course.designs"
@@ -251,11 +225,11 @@ colnames(results1)[8] <- "Gathered.data_Student.production...Learning.artifacts"
 column_index <- which(names(results1) == "Gathered.data_Feedback.and.Input.from.Stakeholders")
 
 # Check if the column exists
-if (length(column_index) > 0) {
-  print("Column exists")
-} else {
-  print("Column does not exist")
-}
+#if (length(column_index) > 0) {
+#  print("Column exists")
+#} else {
+#  print("Column does not exist")
+#}
 
 # Vectorize dummy columns Students
 
@@ -267,7 +241,7 @@ Content <- results1 %>% filter(Gathered.data_Content == '1') %>% select(Paper.ID
 Student_personal_data <- results1 %>% filter(Gathered.data_Student.personal.data == '1') %>% select(Paper.ID) %>% as_vector()
 Students_Teachers <- results1 %>% filter(Gathered.data_Feedback.and.Input.from.Stakeholders == '1') %>% select(Paper.ID) %>% as_vector()
 
-print(names(results1))
+#print(names(results1))
 
 
 
@@ -292,13 +266,12 @@ ven <- venndetail(input)
 plot(ven, type = "vennpie")
 
 
-
 # Show unique subsets, by changing any
 #vennpie(ven,  any = 1, log = TRUE)
 # upSet - Best one for this case
 plot(ven, type = 'upset')
 
-pdf("C:/Users/mahes/OneDrive/Desktop/SLR/Diagrams/upset_plotgathereddata.pdf", width = 10, height = 8)  # Adjust dimensions as needed
+#pdf("C:/Users/....../upset_plotgathereddata.pdf", width = 10, height = 8)  # Adjust dimensions as needed
 
 # UpSet plot
 plot(ven, type = 'upset')
