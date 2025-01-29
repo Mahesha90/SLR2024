@@ -1,5 +1,19 @@
 
 
+---
+title: "SLR 2024"
+output: 
+  html_document:
+    self_contained: true
+    toc: true
+    toc_float: true
+    number_sections: true
+    theme: readable
+knit: rmarkdown::render
+output_file: "index.html"
+---
+
+
 ```{r}
 myurl<-"https://docs.google.com/spreadsheets/d/e/2PACX-1vT5BaviGpM0T2UkNx6-ODNl1QEQMBBL2OQ0IKLrOY7ntFZlo2MaM2GKLyXaZBo82g4Ct2VPFat__9VX/pub?gid=34130077&single=true&output=csv"
 newslr<-read.csv(url(myurl))
@@ -120,7 +134,7 @@ input <- list(Administrators=Administrators, Curriculum_designers=Curriculum_des
 
 # Crazy 6-dimensional Venn
 # This one is cool for 5 an 7 dimensions, why not 6?????????
-#venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
+venn(input, zcolor = "style",  opacity = 0.3, plotsize = 15, box = FALSE,  ilcs = 0.9, sncs = 0.9,  elipse = TRUE)
 
 
 # UpSet plot and pie
@@ -136,6 +150,9 @@ plot(ven, type = 'upset')
 
 ```
 
+```{r}
+exists("ven")
+```
 
 
 
@@ -280,4 +297,8 @@ dev.off()
 
 ```
 
+```{r}
+getwd()  # This will show your current working directory
+list.files()  # This will list all files in your directory
+```
 
