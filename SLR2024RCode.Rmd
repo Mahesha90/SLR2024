@@ -3,11 +3,7 @@
 ```{r}
 myurl<-"https://docs.google.com/spreadsheets/d/e/2PACX-1vT5BaviGpM0T2UkNx6-ODNl1QEQMBBL2OQ0IKLrOY7ntFZlo2MaM2GKLyXaZBo82g4Ct2VPFat__9VX/pub?gid=34130077&single=true&output=csv"
 newslr<-read.csv(url(myurl))
-newslr
 
-```
-```{r}
-windowsFonts()
 ```
 
 
